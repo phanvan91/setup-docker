@@ -1,0 +1,38 @@
+version: '3'
+# docker-compose.yml
+networks:
+    proxy:
+        external:
+            name: common_proxy
+
+services:
+    test_docker :
+        container_name: test_docker
+        build:
+            context: ./docker
+            dockerfile: Dockerfile
+        working_dir: /var/www/html
+        volumes:
+            - .:/var/www/html
+#            - ./docker/nginx_log:/var/log/nginx
+#            - ./docker/php-fpm/php-fpm.log:/var/log/php-fpm.log
+        ports:
+            - 9200:9000
+        networks:
+            - proxy
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+    nginx:
+        container_name: nginx_test_docker
+        image: nginx
+        working_dir: /var/www/html
+        volumes:
+            - .:/var/www/html
+            - ./docker/config/app.conf:/etc/nginx/conf.d/app.conf
+        ports:
+            - 8004:8080
+        networks:
+            - proxy
+
+
+
